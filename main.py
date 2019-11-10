@@ -36,7 +36,19 @@ procsToIter = list(dict.fromkeys(procsToIter))
 
 
 def getInfo(process):
-    pass
+
+    times = 0
+    print(colored.fg("blue"))
+    for proc in suspectedProcs:
+        if proc.name() == process:
+            print("Process run by user: " + proc.username() + " on PID: " + str(proc.pid))
+            print("Command that was used to run: " + str(proc.cmdline()))
+            print("Cpu usage: " + str(proc.cpu_percent()) + "%\n")
+            times += 1
+
+    print(colored.fg("red"))
+    print("Occurences: " + str(times))
+    print(colored.fg("white"))
 
 def mainLogic():
     endProgram = False
@@ -54,7 +66,7 @@ def mainLogic():
 
 
             print(colored.fg("white"))
-            answer = input("\n1. Get more info about\n2. Kill ")
+            answer = input("\n1. Get more info about\n2. Kill\nAnswer: ")
 
             if answer == "2" or answer == "kill" or answer == "Kill":
                 killWho = input("Who: ")
@@ -71,6 +83,7 @@ def mainLogic():
             if procsToIter[p] == procsToIter[-1]:
                 endProgram = True
 
+            sleep(60)
             print('\033c')
 
 
