@@ -9,7 +9,9 @@
 #include <stdio.h>
 #include <signal.h>
 #include <cstdlib>
-
+#include <iostream>
+#include <vector>
+#include <sstream>
 
 // About Desktop OpenGL function loaders:
 //  Modern desktop OpenGL doesn't have a standard portable header file to load OpenGL function pointers.
@@ -39,6 +41,24 @@ static void glfw_error_callback(int error, const char* description)
 {
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
+
+std::string GetStdoutFromCommand(std::string cmd) {
+
+    std::string data;
+    FILE * stream;
+    const int max_buffer = 256;
+    char buffer[max_buffer];
+    cmd.append(" 2>&1");
+
+    stream = popen(cmd.c_str(), "r");
+    if (stream) {
+        while (!feof(stream))
+            if (fgets(buffer, max_buffer, stream) != NULL) data.append(buffer);
+            pclose(stream);
+        }
+    return data;
+}
+
 
 int main(int, char**)
 {
@@ -167,7 +187,27 @@ int main(int, char**)
 
             static char processNameOrPid[256] = { 0 };
             static bool info_window_show = false;
+            static std::vector<std::string> procsAndPids;
+
+            //get python output only once
+            static bool get_py_output = true;
+            static std::string output;
+            if (get_py_output) 
+            {
+                output = GetStdoutFromCommand("python3 main.py");
+                //manipulate python output                    
+                std::istringstream f(output);
+                std::string s;
+                while (getline(f,s, ',')) 
+                {
+                    procsAndPids.push_back(s);
+                }
+                
             
+                get_py_output = false;
+            }
+
+
             __pid_t pid = atoi(processNameOrPid);
             
 
@@ -190,19 +230,28 @@ int main(int, char**)
                 //create new window with info
                 counter = (int)pid;
                 info_window_show = !info_window_show;
+                
             }
             
             if (info_window_show)
             {
+                
                 ImGui::Begin( "Info");
                 ImGui::Text("Cpu usage: %d%%", pid );
+                
+
 
                 ImGui::End();
             }
 
-            
+            ImGui::Begin("Processes");
+    
+            ImGui::Text(procsAndPids[0].c_str());
 
-            ImGui::End();
+            ImGui::End(); //end of another window
+
+
+            ImGui::End(); // end of main window
         }
 
         
