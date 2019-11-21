@@ -51,6 +51,22 @@ def getInfo(process):
     print("Occurences: " + str(times))
     print(colored.fg("white"))
 
+
+def runFromCPP():
+    processesPID = []
+    toReturn = ""
+
+    for p2 in suspectedProcs:
+        processesPID.append(p2.name() + " " + str(p2.pid))
+    
+    for stringToReturn in processesPID:
+        toReturn += stringToReturn + ","
+    
+    print(toReturn)
+    
+    
+    
+
 def mainLogic():
     endProgram = False
     perline = 0
@@ -88,4 +104,5 @@ def mainLogic():
             print('\033c')
 
 
-mainLogic()
+#mainLogic()
+runFromCPP()
