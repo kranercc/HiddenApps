@@ -2,9 +2,10 @@ import psutil
 import socket
 from time import sleep
 import colored
+from getpass import getuser
 
 
-myUsername = socket.gethostname()
+myUsername = getuser()
 
 myProcsNames = []
 myProcs = []
