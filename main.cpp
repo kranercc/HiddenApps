@@ -188,12 +188,19 @@ int main(int, char**)
             static char processNameOrPid[256] = { 0 };
             static bool info_window_show = false;
             static std::vector<std::string> procsAndPids;
+            static bool get_allInfo = true;
 
             //get python output only once
             static bool get_py_output = true;
-            static std::string output;
-            if (get_py_output) 
+            static std::string output;            
+
+
+            ImGui::Begin("Processes");
+
+            if (get_allInfo)
             {
+                if (get_py_output) 
+                {
                 output = GetStdoutFromCommand("python3 main.py");
                 //manipulate python output                    
                 std::istringstream f(output);
@@ -205,7 +212,22 @@ int main(int, char**)
                 
             
                 get_py_output = false;
+                }
+                get_allInfo = false;
             }
+
+            ImGui::Text("NAME <-> PID");
+            for( int i = 0; i < procsAndPids.size() -1 ; i++)
+            {
+                ImGui::Text(procsAndPids[i].c_str());
+            }
+            ImGui::End(); //end of another window
+            
+
+
+
+
+
 
 
             __pid_t pid = atoi(processNameOrPid);
@@ -217,6 +239,7 @@ int main(int, char**)
             
             static int counter = pid;
             ImGui::Text("PID to kill: %d", counter);
+
 
 
             if (ImGui::Button("Kill")) 
@@ -244,14 +267,15 @@ int main(int, char**)
                 ImGui::End();
             }
 
-            ImGui::Begin("Processes");
-    
-            ImGui::Text(procsAndPids[0].c_str());
-
-            ImGui::End(); //end of another window
+            
 
 
             ImGui::End(); // end of main window
+
+
+
+
+
         }
 
         
